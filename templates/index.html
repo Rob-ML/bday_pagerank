@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROB'S BIRTHDAY BASH RANKING SYSTEM 1.0</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 24px;
+            margin: 0;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        main {
+            max-width: 800px;
+            margin: 80px auto 20px; /* Adjusted margin to accommodate the fixed header */
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #333;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .rank1 {
+            background-color: gold;
+        }
+
+        .rank2 {
+            background-color: silver;
+        }
+
+        .rank3 {
+            background-color: #cd7f32;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ROB'S BIRTHDAY BASH RANKING SYSTEM 1.0</h1>
+    </header>
+
+    <main>
+        <div>
+            <h2>Add Teams</h2>
+            <form action="/add_team" method="post">
+                <label for="team_name">Team Name:</label>
+                <input type="text" id="team_name" name="team_name" required>
+                <button type="submit">Add Team</button>
+            </form>
+        </div>
+
+        {% if teams %}
+            <div>
+                <h2>Play Game</h2>
+                <p>Select multiple contestants by holding down the space or control button.</p>
+                <form action="/play_game" method="post">
+                    <label for="participating_teams">Select Participating Teams:</label>
+                    <select id="participating_teams" name="participating_teams" multiple required>
+                        {% for team in teams %}
+                            <option value="{{ team }}">{{ team }}</option>
+                        {% endfor %}
+                    </select>
+                    <label for="winner">Select Winner:</label>
+                    <select id="winner" name="winner" required>
+                        {% for team in teams %}
+                            <option value="{{ team }}">{{ team }}</option>
+                        {% endfor %}
+                    </select>
+                    <button type="submit">Play Game</button>
+                </form>
+            </div>
+        {% endif %}
+
+        {% if ranking %}
+            <div>
+                <h2>Current Ranking</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Final Score</th>
+                            <th>PageRank Score</th>
+                            <th>Games Played</th>
+                            <th>Games Played Percentage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in ranking %}
+                            <tr class="{% if item.rank == 1 %}rank1{% elif item.rank == 2 %}rank2{% elif item.rank == 3 %}rank3{% endif %}">
+                                <td>{{ item.rank }}</td>
+                                <td>{{ item.team }}</td>
+                                <td>{{ item.final_score | round(2) }}</td>
+                                <td>{{ item.pagerank | round(4) }}</td>
+                                <td>{{ item.games_played }}</td>
+                                <td>{{ item.games_played_percentage | round(2) }}%</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <div>
+            <h2>Graph Visualization</h2>
+            <p>Explore the graph visualization <a href="/visualization" target="_blank">here</a>.</p>
+        </div>
+    </main>
+</body>
+</html>
